@@ -42,6 +42,7 @@ public class MainGameLoop {
 		ModelData flowerData = OBJFileLoader.loadOBJ("grassModel");
 		ModelData playerData = OBJFileLoader.loadOBJ("person");
 		ModelData lowPolyTreeData = OBJFileLoader.loadOBJ("lowPolyTree");
+		ModelData boxData = OBJFileLoader.loadOBJ("box");
 		
 		// Static Models
 		RawModel treeStaticModel = loader.loadToVAO(treeData.getVertices(), treeData.getTextureCoords(),
@@ -56,20 +57,26 @@ public class MainGameLoop {
 				playerData.getNormals(), playerData.getIndices());
 		RawModel lowPolyTreeModel = loader.loadToVAO(lowPolyTreeData.getVertices(), lowPolyTreeData.getTextureCoords(),
 				lowPolyTreeData.getNormals(), lowPolyTreeData.getIndices());
+		RawModel boxModel = loader.loadToVAO(boxData.getVertices(), boxData.getTextureCoords(),
+				boxData.getNormals(), boxData.getIndices());
+		
+		// Texture Atalases
+		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fernAtlas"));
+		fernTextureAtlas.setNumberOfRows(2);
 		
 		// Textured Models
 		TexturedModel treeModel = new TexturedModel(treeStaticModel, new ModelTexture
 				(loader.loadTexture("tree")));
 		TexturedModel grassModel = new TexturedModel(grassStaticModel, new ModelTexture
 				(loader.loadTexture("grassTexture")));
-		TexturedModel fernModel = new TexturedModel(fernStaticModel, new ModelTexture
-				(loader.loadTexture("fern")));
+		TexturedModel fernModel = new TexturedModel(fernStaticModel, fernTextureAtlas);
 		TexturedModel flowerModel = new TexturedModel(flowerStaticModel, new ModelTexture
 				(loader.loadTexture("flower")));
 		TexturedModel personModel = new TexturedModel(playerStaticModel, new ModelTexture
 				(loader.loadTexture("playerTexture")));
 		TexturedModel lowPolyTreeTexModel = new TexturedModel(lowPolyTreeModel, new ModelTexture
 				(loader.loadTexture("tree")));
+		TexturedModel boxTexModel = new TexturedModel(boxModel, new ModelTexture(loader.loadTexture("box")));
 		
 		// Set Transparent textured models here
 		grassModel.getTexture().setHasTransparency(true);
@@ -134,7 +141,14 @@ public class MainGameLoop {
 			float x = random.nextFloat()*800 - 400;
 			float z = random.nextFloat() * -800;
 			float y = terrain.getHeightOfTerrain(x, z);
-			entities.add(new Entity(fernModel, new Vector3f(x, y, z),0,0,0,1));
+			entities.add(new Entity(boxTexModel, new Vector3f(x, y, z),0,0,0,5));
+		}
+		for (int i = 0; i < 30; i++) {
+			// X, Y, Z positions
+			float x = random.nextFloat()*800 - 400;
+			float z = random.nextFloat() * -800;
+			float y = terrain.getHeightOfTerrain(x, z) + 5;
+			entities.add(new Entity(boxTexModel, new Vector3f(x, y, z),0,0,0,5));
 		}
 		for (int i = 0; i < 300; i++) {
 			// X, Y, Z positions
@@ -142,6 +156,14 @@ public class MainGameLoop {
 			float z = random.nextFloat() * -800;
 			float y = terrain.getHeightOfTerrain(x, z);
 			entities.add(new Entity(flowerModel, new Vector3f(x, y, z),0,0,0,1));
+			entities.add(new Entity(fernModel, random.nextInt(4), new Vector3f(x, y, z),0,0,0,1));
+		}
+		for (int i = 0; i < 800; i++) {
+			// X, Y, Z positions
+			float x = random.nextFloat()*800 - 400;
+			float z = random.nextFloat() * -800;
+			float y = terrain.getHeightOfTerrain(x, z);
+			entities.add(new Entity(fernModel, random.nextInt(4), new Vector3f(x, y, z),0,0,0,1));
 		}
 		
 		// Create the master renderer object to render multiple objects

@@ -35,7 +35,7 @@ public class EntityRenderer {
 			List<Entity> batch = entities.get(model);
 			for(Entity entity:batch){
 				prepareInstance(entity);
-				// This is where rendering for entitis will occur.
+				// This is where rendering for entitys will occur.
 				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), 
 						GL11.GL_UNSIGNED_INT, 0);
 			}
@@ -50,6 +50,7 @@ public class EntityRenderer {
 		GL20.glEnableVertexAttribArray(1);
 		GL20.glEnableVertexAttribArray(2);
 		ModelTexture texture = model.getTexture();
+		shader.loadNumberOfRows(texture.getNumberOfRows());
 		
 		// If the texture is a transparent texture i.e
 		// grass disable backface culling.
@@ -75,5 +76,6 @@ public class EntityRenderer {
 		Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(),
 				entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
 		shader.loadTransformationMatrix(transformationMatrix);
+		shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYOffset());
 	}
 }

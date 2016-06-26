@@ -16,7 +16,7 @@ uniform mat4 viewMatrix;
 uniform vec3 lightPosition;
 
 // Alter the density value for fog density
-const float density = 0.0075;
+const float density = 0.0035;
 const float gradient = 5.0;
 
 void main(void){

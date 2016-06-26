@@ -10,6 +10,22 @@ public class ModelTexture {
 	private boolean hasTransparency = false;
 	private boolean useFakeLighting = false;
 	
+	// Number of rows within the texture atlas
+	private int numberOfRows = 1;
+	
+	// Class constructor
+	public ModelTexture(int id) {
+		this.textureID = id;
+	}
+	
+	public int getNumberOfRows() {
+		return numberOfRows;
+	}
+
+	public void setNumberOfRows(int numberOfRows) {
+		this.numberOfRows = numberOfRows;
+	}
+
 	public boolean isUseFakeLighting() {
 		return useFakeLighting;
 	}
@@ -40,10 +56,6 @@ public class ModelTexture {
 
 	public void setReflectivity(float reflectivity) {
 		this.reflectivity = reflectivity;
-	}
-
-	public ModelTexture(int id) {
-		this.textureID = id;
 	}
 	
 	public int getID() {
