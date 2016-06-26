@@ -93,7 +93,14 @@ public class MainGameLoop {
 		fernModel.getTexture().setUseFakeLighting(true);
 		flowerModel.getTexture().setUseFakeLighting(true);
 		
-		Light light = new Light(new Vector3f(20000, 20000, 20000), new Vector3f(1, 1, 1));
+		// Create individual lights
+		Light light = new Light(new Vector3f(0, 10000, -7000), new Vector3f(1, 1, 1));
+		
+		// Create multiple lights list
+		List<Light> lights = new ArrayList<Light>();
+		lights.add(light);
+		lights.add(new Light(new Vector3f(-200, 10, -200), new Vector3f(10, 0, 0)));
+		lights.add(new Light(new Vector3f(200, 10, 200), new Vector3f(0, 0, 10)));
 		
 		// Terrain Texture stuff
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
@@ -199,7 +206,7 @@ public class MainGameLoop {
 			}
 			
 			// Once a frame call the render method
-			renderer.render(light, camera);
+			renderer.render(lights, camera);
 			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();			
 		}
