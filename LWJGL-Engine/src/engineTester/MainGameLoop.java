@@ -46,6 +46,7 @@ public class MainGameLoop {
 		ModelData playerData = OBJFileLoader.loadOBJ("person");
 		ModelData lowPolyTreeData = OBJFileLoader.loadOBJ("lowPolyTree");
 		ModelData boxData = OBJFileLoader.loadOBJ("box");
+		ModelData lampData = OBJFileLoader.loadOBJ("lamp");
 		
 		// Static Models
 		RawModel treeStaticModel = loader.loadToVAO(treeData.getVertices(), treeData.getTextureCoords(),
@@ -62,6 +63,8 @@ public class MainGameLoop {
 				lowPolyTreeData.getNormals(), lowPolyTreeData.getIndices());
 		RawModel boxModel = loader.loadToVAO(boxData.getVertices(), boxData.getTextureCoords(),
 				boxData.getNormals(), boxData.getIndices());
+		RawModel lampModel = loader.loadToVAO(lampData.getVertices(), lampData.getTextureCoords(),
+				lampData.getNormals(), lampData.getIndices());
 		
 		// Texture Atalases
 		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fernAtlas"));
@@ -79,7 +82,10 @@ public class MainGameLoop {
 				(loader.loadTexture("playerTexture")));
 		TexturedModel lowPolyTreeTexModel = new TexturedModel(lowPolyTreeModel, new ModelTexture
 				(loader.loadTexture("tree")));
-		TexturedModel boxTexModel = new TexturedModel(boxModel, new ModelTexture(loader.loadTexture("box")));
+		TexturedModel boxTexModel = new TexturedModel(boxModel, new ModelTexture
+				(loader.loadTexture("box")));
+		TexturedModel lampTexModel = new TexturedModel(lampModel, new ModelTexture
+				(loader.loadTexture("lamp")));
 		
 		// Set Transparent textured models here
 		grassModel.getTexture().setHasTransparency(true);
@@ -93,14 +99,10 @@ public class MainGameLoop {
 		fernModel.getTexture().setUseFakeLighting(true);
 		flowerModel.getTexture().setUseFakeLighting(true);
 		
-		// Create individual lights
-		Light light = new Light(new Vector3f(0, 10000, -7000), new Vector3f(1, 1, 1));
-		
-		// Create multiple lights list
-		List<Light> lights = new ArrayList<Light>();
-		lights.add(light);
-		lights.add(new Light(new Vector3f(-200, 10, -200), new Vector3f(10, 0, 0)));
-		lights.add(new Light(new Vector3f(200, 10, 200), new Vector3f(0, 0, 10)));
+		//Entity entity = new Entity(staticModel, new Vector3f(0, 0, -50), 0, 0, 0, 1);
+		// A list of all entities to be rendered in one draw call per frame.
+		List<Entity> entities = new ArrayList<Entity>();
+		Random random = new Random();
 		
 		// Terrain Texture stuff
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
@@ -115,6 +117,11 @@ public class MainGameLoop {
 		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "heightmap");
 		Terrain terrain2 = new Terrain(-1, -1, loader, texturePack, blendMap, "heightmap");
 		
+		// Create lights list and add sun to list.
+		List<Light> lights = new ArrayList<Light>();
+		Light sun = new Light(new Vector3f(0, 1000, -7000), new Vector3f(0.4f, 0.4f, 0.4f));
+		lights.add(sun);
+		
 		// Player object
 		Player player = new Player(personModel, new Vector3f(100, 0, -50), 0, -198.87997f, 0, 1);
 		Camera camera = new Camera(player);
@@ -123,11 +130,23 @@ public class MainGameLoop {
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
 		GuiTexture gui = new GuiTexture(loader.loadTexture("minimap"), new Vector2f(0.8f, 0.7f), new Vector2f(0.25f, 0.25f));
 		guis.add(gui);
-		
-		//Entity entity = new Entity(staticModel, new Vector3f(0, 0, -50), 0, 0, 0, 1);
-		// A list of all entities to be rendered in one draw call per frame.
-		List<Entity> entities = new ArrayList<Entity>();
-		Random random = new Random();
+		// Loop through multiple attenuated light + lamp sources
+		for (int i = 0; i < 15; i++) {
+			// X, Y, Z positions
+			float x = random.nextFloat()*800 - 400;
+			float z = random.nextFloat() * -800;
+			float y = terrain.getHeightOfTerrain(x, z);
+			// Random RGB colours
+			float r = 5.0f - random.nextFloat();
+			float g = 5.0f - random.nextFloat();
+			float b = 5.0f - random.nextFloat();
+			
+			// Lamps which lights will attenuate from
+			entities.add(new Entity(lampTexModel, new Vector3f(x, y, z), 0, 0, 0, 1));
+			
+			// Create multiple light sources and add to list
+			lights.add(new Light(new Vector3f(x, (y) + (10), z), new Vector3f(r, g, b), new Vector3f(1, 0.01f, 0.002f)));
+		}
 		
 		// Loop through multiple trees and allocate random positions
 		for (int i = 0; i < 500; i++) {
