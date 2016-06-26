@@ -8,12 +8,15 @@ import javax.xml.crypto.Data;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Player;
+import guis.GuiRenderer;
+import guis.GuiTexture;
 import models.RawModel;
 import models.TexturedModel;
 import objConverter.ModelData;
@@ -109,6 +112,11 @@ public class MainGameLoop {
 		Player player = new Player(personModel, new Vector3f(100, 0, -50), 0, -198.87997f, 0, 1);
 		Camera camera = new Camera(player);
 		
+		// GUI objects
+		List<GuiTexture> guis = new ArrayList<GuiTexture>();
+		GuiTexture gui = new GuiTexture(loader.loadTexture("minimap"), new Vector2f(0.8f, 0.7f), new Vector2f(0.25f, 0.25f));
+		guis.add(gui);
+		
 		//Entity entity = new Entity(staticModel, new Vector3f(0, 0, -50), 0, 0, 0, 1);
 		// A list of all entities to be rendered in one draw call per frame.
 		List<Entity> entities = new ArrayList<Entity>();
@@ -170,6 +178,9 @@ public class MainGameLoop {
 		// efficiently with one draw call for every object per frame.
 		MasterRenderer renderer = new MasterRenderer();
 		
+		// GUI Renderer object
+		GuiRenderer guiRenderer = new GuiRenderer(loader);
+		
 		while(!Display.isCloseRequested()){
 			// Game Logic
 			camera.move();
@@ -189,9 +200,11 @@ public class MainGameLoop {
 			
 			// Once a frame call the render method
 			renderer.render(light, camera);
+			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();			
 		}
 		
+		guiRenderer.cleanUp();
 		renderer.cleanpUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
